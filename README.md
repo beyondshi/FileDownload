@@ -1,4 +1,4 @@
-# SimpleDownload
+# FileDownload
 
 kotlin协程+channel实现下载，支持多任务下载、断点续传
 
