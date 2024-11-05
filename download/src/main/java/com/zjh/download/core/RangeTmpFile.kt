@@ -1,9 +1,14 @@
 package com.zjh.download.core
 
 import com.zjh.download.helper.Progress
-import okio.*
-import okio.ByteString.Companion.decodeHex
 import java.io.File
+import okio.Buffer
+import okio.BufferedSink
+import okio.BufferedSource
+import okio.ByteString.Companion.decodeHex
+import okio.buffer
+import okio.sink
+import okio.source
 
 class RangeTmpFile(private val tmpFile: File) {
     private val fileHeader = FileHeader()
@@ -44,7 +49,7 @@ class RangeTmpFile(private val tmpFile: File) {
  */
 private class FileHeader(
     var totalSize: Long = 0L,
-    var totalRanges: Long = 0L
+    var totalRanges: Long = 0L,
 ) {
 
     companion object {
@@ -93,7 +98,7 @@ private class FileContent {
         sink: BufferedSink,
         totalSize: Long,
         totalRanges: Long,
-        rangeSize: Long
+        rangeSize: Long,
     ) {
         ranges.clear()
 
@@ -140,7 +145,7 @@ class Range(
     var index: Long = 0L,
     var start: Long = 0L,
     var current: Long = 0L,
-    var end: Long = 0L
+    var end: Long = 0L,
 ) {
 
     companion object {

@@ -1,27 +1,39 @@
 package com.zjh.download.core
 
+import com.zjh.download.helper.Default
 import com.zjh.download.helper.Progress
 import com.zjh.download.helper.State
 import com.zjh.download.helper.StateHolder
-import com.zjh.download.helper.Default
 import com.zjh.download.utils.clear
 import com.zjh.download.utils.closeQuietly
 import com.zjh.download.utils.fileName
 import com.zjh.download.utils.logD
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 import java.io.File
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 /**
  *  desc : 下载任务
  *  @author zjh
  *  on 2021/8/24
  */
-@OptIn(ObsoleteCoroutinesApi::class, FlowPreview::class, ExperimentalCoroutinesApi::class)
 class DownloadTask(
     val coroutineScope: CoroutineScope,
     val param: DownloadParam,
-    val config: DownloadConfig
+    val config: DownloadConfig,
 ) {
 
     /**
@@ -185,10 +197,16 @@ class DownloadTask(
      */
     fun progress(interval: Long = 200, ensureLast: Boolean = true): Flow<Progress> {
         return downloadProgressFlow.flatMapConcat {
+            logD("progress Thread Name : ${Thread.currentThread().name}")
             //确保只发送一次
             var hasSend = false
             channelFlow {
                 while (currentCoroutineContext().isActive) {
+
+                    if (stateHolder.isStop()) {
+                        break
+                    }
+
                     val progress = getProgress()
 
                     if (hasSend && stateHolder.isEnd()) {
@@ -250,7 +268,7 @@ class DownloadTask(
     private suspend fun notifyStarted() {
         stateHolder.updateState(stateHolder.downloading, getProgress())
         downloadStateFlow.value = stateHolder.currentState
-        downloadProgressFlow.value = downloadProgressFlow.value + 1
+        downloadProgressFlow.value += 1
         logD("url ${param.url} download task start.")
     }
 

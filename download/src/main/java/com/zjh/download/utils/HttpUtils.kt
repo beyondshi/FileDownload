@@ -106,13 +106,9 @@ fun getFileNameFromUrl(url: String): String {
  * 是否支持分片下载
  */
 fun Response<*>.isSupportRange(): Boolean {
-    if (code() == 206
-        || header("Content-Range").isNotEmpty()
-        || header("Accept-Ranges") == "bytes"
-    ) {
-        return true
-    }
-    return false
+    return (code() == 206
+            || header("Content-Range").isNotEmpty()
+            || header("Accept-Ranges") == "bytes")
 }
 
 /**

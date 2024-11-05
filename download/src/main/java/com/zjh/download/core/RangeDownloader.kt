@@ -1,21 +1,31 @@
 package com.zjh.download.core
 
 import com.zjh.download.core.Range.Companion.RANGE_SIZE
-import com.zjh.download.utils.*
-import kotlinx.coroutines.*
+import com.zjh.download.utils.calcRanges
+import com.zjh.download.utils.closeQuietly
+import com.zjh.download.utils.contentLength
+import com.zjh.download.utils.mappedByteBuffer
+import com.zjh.download.utils.parallel
+import com.zjh.download.utils.recreate
+import com.zjh.download.utils.shadow
+import com.zjh.download.utils.tmp
+import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.isActive
 import okhttp3.ResponseBody
 import retrofit2.Response
-import java.io.File
 
 /**
  *  desc : 分片下载器
  *  @author zjh
  *  on 2021/8/24
  */
-@OptIn(ObsoleteCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 class RangeDownloader(coroutineScope: CoroutineScope) : BaseDownloader(coroutineScope) {
     private lateinit var file: File
     private lateinit var shadowFile: File

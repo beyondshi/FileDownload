@@ -12,6 +12,7 @@ import retrofit2.Response
  *  @author zjh
  *  on 2021/8/24
  */
+@Suppress("LongParameterList")
 class DownloadConfig(
     /**
      *下载管理

@@ -1,14 +1,21 @@
 package com.zjh.download.core
 
-import com.zjh.download.utils.*
-import kotlinx.coroutines.*
+import com.zjh.download.utils.closeQuietly
+import com.zjh.download.utils.contentLength
+import com.zjh.download.utils.isChunked
+import com.zjh.download.utils.recreate
+import com.zjh.download.utils.shadow
+import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.isActive
 import okhttp3.ResponseBody
 import okio.buffer
 import okio.sink
 import retrofit2.Response
-import java.io.File
 
-@OptIn(ObsoleteCoroutinesApi::class)
 class NormalDownloader(coroutineScope: CoroutineScope) : BaseDownloader(coroutineScope) {
     companion object {
         private const val BUFFER_SIZE = 8192L

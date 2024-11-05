@@ -1,8 +1,8 @@
 package com.zjh.download.utils
 
+import com.zjh.download.core.DownloadConfig
 import com.zjh.download.core.DownloadParam
 import com.zjh.download.core.DownloadTask
-import com.zjh.download.core.DownloadConfig
 import com.zjh.download.helper.Default
 import kotlinx.coroutines.CoroutineScope
 
@@ -14,7 +14,7 @@ fun CoroutineScope.download(
     url: String,
     saveName: String = "",
     savePath: String = Default.DEFAULT_SAVE_PATH,
-    downloadConfig: DownloadConfig = DownloadConfig()
+    downloadConfig: DownloadConfig = DownloadConfig(),
 ): DownloadTask {
     logD("saveName : $saveName , path : $savePath")
     val downloadParams = DownloadParam(url, saveName, savePath)
@@ -27,7 +27,7 @@ fun CoroutineScope.download(
  */
 fun CoroutineScope.download(
     downloadParam: DownloadParam,
-    downloadConfig: DownloadConfig = DownloadConfig()
+    downloadConfig: DownloadConfig = DownloadConfig(),
 ): DownloadTask {
     val task = DownloadTask(this, downloadParam, downloadConfig)
     return downloadConfig.taskManager.add(task)

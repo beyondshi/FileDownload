@@ -35,6 +35,10 @@ class StateHolder {
         return currentState is State.None || currentState is State.Waiting || currentState is State.Stopped || currentState is State.Failed || currentState is State.Succeed
     }
 
+    fun isStop(): Boolean {
+        return currentState !is State.Succeed && currentState is State.Stopped
+    }
+
     /**
      * 更新状态
      */
